@@ -1,56 +1,77 @@
-import React, {Component } from 'react';
-import { StyleSheet, View, Text, FlatList } from 'react-native';
-import axios from 'axios'
+import React, { Component } from 'react';
+import { StyleSheet, View, Text, FlatList,Image  } from 'react-native';
+import axios from 'axios';
 
-import TrainingDetail from '../components/TrainingDetail';
+class Trainings extends Component {
+  constructor() {
+    super();
 
-class TrainingList extends Component {
-constructor() {
-  super();
-
-  this.state = { TrainingList: [] };  // başlangıç statesi atıyoruz boş olarak tanımladık.
-}
-
-  componentDidMount(){
-    axios.get('http://mertay.me/trainings.json')
-    .then((response) => {
-      this.setState({ TrainingList: response.data }); // setState ile çektik.
-    })
+    this.state = { Trainings: [] };
   }
 
-
+  componentDidMount() {
+    axios.get('http://mertay.me/trainings.json')
+      .then((response) => {
+        this.setState({ Trainings: response.data });
+      });
+  }
 
   render() {
-    var TrainList = this.state.TrainingList;
+    var Trainings = this.state.Trainings;
+    var User = this.props.navigation.state.params.User;
     return (
-      <View style={styles.viewStyle}>
-        <FlatList 
-          data={TrainList} 
-          renderItem={ ({item}) => { 
-            return (
-                <Text style={styles.textStyle}> {item.title}</Text>
-            );
-          }}
+      <View style={styles.container}>
+        <Text style={styles.header}>{User} Hoşgeldiniz.</Text>
+        <FlatList
+          data={Trainings}
+          renderItem={({ item }) => (
+            <View style={styles.trainingItem}>
+              <Text style={styles.title}>{item.title}</Text>
+              <Image
+                source={{ uri: item.Url }} // Resim URL'sini kaynak olarak kullanın
+                style={styles.image}
+              />
+              {/* Diğer bilgileri buraya ekleyebilirsiniz */}
+            </View>
+          )}
           keyExtractor={data => data.title}
-          />
-       </View>
+        />
+      </View>
     );
   }
 }
 
 const styles = StyleSheet.create({
-
-  textStyle: {
-    fontSize: 22,
-    marginVertical: 50,
-    fontWeight: 'bold'
-  },
-  viewStyle:{
+  container: {
+    flex: 1,
     backgroundColor: 'gainsboro',
-    justifyContent: 'center',
+    padding: 20,
+  },
+  header: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 20,
+  },
+  trainingItem: {
+    backgroundColor: 'white',
+    marginBottom: 10,
+    padding: 10,
+    borderRadius: 5,
+    elevation: 3,
+  },
+  title: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  image: {
+    width: 200, // İstenilen genişlik ve yüksekliği ayarlayabilirsiniz
+    height: 200,
     alignItems: 'center',
-    paddingTop: 25
-  }
+    resizeMode: 'cover', // Resim boyutunu ve ölçeklemeyi ayarlayabilirsiniz
+    marginBottom: 10,
+  },
+  // Diğer stilleri buraya ekleyebilirsiniz
 });
 
-export default TrainingList;
+export default Trainings;
